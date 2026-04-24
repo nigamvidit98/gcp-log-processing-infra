@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: log-generator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: log-generator
+  template:
+    metadata:
+      labels:
+        app: log-generator
+    spec:
+      containers:
+        - name: log-generator
+          image: curlimages/curl
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              while true; do
+                curl -X POST http://log-processor:80/logs \
+                -H "Content-Type: text/plain" \
+                -d "Log entry $(date)";
+                sleep 2;
+              done;
